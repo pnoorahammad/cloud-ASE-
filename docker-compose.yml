@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=development
+      - SF_SIMULATION_MODE=true
+      - FRONTEND_URL=http://localhost:5173
+      - SF_REDIRECT_URI=http://localhost:5000/auth/callback
+      - JWT_SECRET=super_secret_session_token_for_validation_rule_manager
+    depends_on:
+      - redis
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    environment:
+      - VITE_API_BASE=http://localhost:5000
+    depends_on:
+      - backend
+
+volumes:
+  redis-data:
