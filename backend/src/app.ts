@@ -29,10 +29,33 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
 
-// Enable CORS for frontend only (comma-separated origins supported)
+// Enable CORS for frontend (supports local dev, configured FRONTEND_URL, and Vercel domains)
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 const corsOrigins = frontendUrl.split(',').map((o) => o.trim()).filter(Boolean);
-app.use(cors({ origin: corsOrigins.length === 1 ? corsOrigins[0] : corsOrigins, credentials: true }));
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
+
+    // Allow configured frontend URLs
+    if (corsOrigins.includes(origin)) return callback(null, true);
+
+    // Allow any Vercel preview or production domain
+    if (origin.endsWith('.vercel.app')) return callback(null, true);
+
+    // Allow localhost/127.0.0.1 for development
+    if (origin.startsWith('http://localhost:') || 
+        origin.startsWith('http://127.0.0.1:') || 
+        origin.includes('192.168.') || 
+        origin.includes('10.')) {
+      return callback(null, true);
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+}));
 
 // Rate limiting
 app.use(rateLimit({ windowMs: 60 * 1000, max: 120 }));
