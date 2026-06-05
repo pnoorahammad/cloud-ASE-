@@ -13,6 +13,13 @@ export interface AuthenticatedUser {
   username?: string;
   email?: string;
   fullName?: string;
+  firstName?: string;
+  lastName?: string;
+  emailAddress?: string;
+  jobRole?: string;
+  company?: string;
+  country?: string;
+  postalCode?: string;
   salesforceConnected?: boolean;
   localUserId?: string;
   sfUserId?: string;

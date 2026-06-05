@@ -1,6 +1,6 @@
 import api from './api'
 
-export const signUp = async (data: { email: string; password: string; fullName: string }) => {
+export const signUp = async (data: Record<string, any>) => {
   const resp = await api.post('/auth/signup', data)
   return resp.data
 }
@@ -10,7 +10,7 @@ export const signIn = async (data: { email: string; password: string }) => {
   return resp.data
 }
 
-export const updateProfile = async (data: { email?: string; fullName?: string }) => {
+export const updateProfile = async (data: Record<string, any>) => {
   const resp = await api.put('/auth/profile', data)
   return resp.data
 }

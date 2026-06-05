@@ -6,23 +6,54 @@ import { AuthenticatedRequest } from '../middleware/types';
 
 export const signUp = async (req: Request, res: Response) => {
   try {
-    const { email, password, fullName } = req.body;
+    const {
+      email,
+      password,
+      fullName,
+      firstName,
+      lastName,
+      emailAddress,
+      jobRole,
+      company,
+      country,
+      postalCode
+    } = req.body;
+
     if (!email || !password || !fullName) {
-      return res.status(400).json({ error: 'Email, password, and full name are required.' });
+      return res.status(400).json({ error: 'Email (Username), password, and full name are required.' });
     }
     if (password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters.' });
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return res.status(400).json({ error: 'Enter a valid email address (e.g. Gmail).' });
+      return res.status(400).json({ error: 'Enter a valid email address (e.g. Gmail) for Username.' });
     }
 
-    const user = await createUser({ email, password, fullName });
+    const user = await createUser({
+      email,
+      password,
+      fullName,
+      firstName,
+      lastName,
+      emailAddress,
+      jobRole,
+      company,
+      country,
+      postalCode
+    });
+
     setSessionCookie(res, {
       authType: 'local',
       userId: user._id,
       email: user.email,
       fullName: user.fullName,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      emailAddress: user.emailAddress,
+      jobRole: user.jobRole,
+      company: user.company,
+      country: user.country,
+      postalCode: user.postalCode,
       salesforceConnected: false
     });
 
@@ -32,6 +63,13 @@ export const signUp = async (req: Request, res: Response) => {
       userId: user._id,
       email: user.email,
       fullName: user.fullName,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      emailAddress: user.emailAddress,
+      jobRole: user.jobRole,
+      company: user.company,
+      country: user.country,
+      postalCode: user.postalCode,
       salesforceConnected: false
     });
   } catch (err: any) {
@@ -83,10 +121,28 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response) =>
   }
 
   try {
-    const { email, fullName } = req.body;
+    const {
+      email,
+      fullName,
+      firstName,
+      lastName,
+      emailAddress,
+      jobRole,
+      company,
+      country,
+      postalCode
+    } = req.body;
+
     const updates: Record<string, string> = {};
     if (email) updates.email = email;
     if (fullName) updates.fullName = fullName;
+    if (firstName !== undefined) updates.firstName = firstName;
+    if (lastName !== undefined) updates.lastName = lastName;
+    if (emailAddress !== undefined) updates.emailAddress = emailAddress;
+    if (jobRole !== undefined) updates.jobRole = jobRole;
+    if (company !== undefined) updates.company = company;
+    if (country !== undefined) updates.country = country;
+    if (postalCode !== undefined) updates.postalCode = postalCode;
 
     if (Object.keys(updates).length === 0) {
       return res.status(400).json({ error: 'Nothing to update.' });
@@ -99,6 +155,13 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response) =>
       localUserId: localId,
       email: user.email,
       fullName: user.fullName,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      emailAddress: user.emailAddress,
+      jobRole: user.jobRole,
+      company: user.company,
+      country: user.country,
+      postalCode: user.postalCode,
       salesforceConnected: !!req.user.accessToken,
       ...(req.user.accessToken ? {
         accessToken: req.user.accessToken,
@@ -115,6 +178,13 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response) =>
       userId: req.user.userId,
       email: user.email,
       fullName: user.fullName,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      emailAddress: user.emailAddress,
+      jobRole: user.jobRole,
+      company: user.company,
+      country: user.country,
+      postalCode: user.postalCode,
       salesforceConnected: !!req.user.accessToken
     });
   } catch (err: any) {

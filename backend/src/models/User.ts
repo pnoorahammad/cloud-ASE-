@@ -11,6 +11,13 @@ export interface IUser {
   email: string;
   passwordHash: string;
   fullName: string;
+  firstName?: string;
+  lastName?: string;
+  emailAddress?: string;
+  jobRole?: string;
+  company?: string;
+  country?: string;
+  postalCode?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -21,7 +28,14 @@ const UserSchema = new Schema<IUserDocument>(
   {
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     passwordHash: { type: String, required: true },
-    fullName: { type: String, required: true, trim: true }
+    fullName: { type: String, required: true, trim: true },
+    firstName: { type: String, trim: true },
+    lastName: { type: String, trim: true },
+    emailAddress: { type: String, lowercase: true, trim: true },
+    jobRole: { type: String, trim: true },
+    company: { type: String, trim: true },
+    country: { type: String, trim: true },
+    postalCode: { type: String, trim: true }
   },
   { timestamps: true }
 );
@@ -83,7 +97,18 @@ export const findUserById = async (id: string): Promise<(IUser & { _id: string }
   return users.find((u) => u._id === id) || null;
 };
 
-export const createUser = async (data: { email: string; password: string; fullName: string }) => {
+export const createUser = async (data: {
+  email: string;
+  password: string;
+  fullName: string;
+  firstName?: string;
+  lastName?: string;
+  emailAddress?: string;
+  jobRole?: string;
+  company?: string;
+  country?: string;
+  postalCode?: string;
+}) => {
   const existing = await findUserByEmail(data.email);
   if (existing) throw new Error('Email already registered');
 
@@ -91,7 +116,14 @@ export const createUser = async (data: { email: string; password: string; fullNa
   const userData = {
     email: data.email.toLowerCase().trim(),
     passwordHash,
-    fullName: data.fullName.trim()
+    fullName: data.fullName.trim(),
+    firstName: data.firstName?.trim(),
+    lastName: data.lastName?.trim(),
+    emailAddress: data.emailAddress?.toLowerCase().trim(),
+    jobRole: data.jobRole?.trim(),
+    company: data.company?.trim(),
+    country: data.country?.trim(),
+    postalCode: data.postalCode?.trim()
   };
 
   if (mongoose.connection.readyState === 1 && UserModel) {
@@ -108,7 +140,18 @@ export const createUser = async (data: { email: string; password: string; fullNa
 
 export const updateUser = async (
   id: string,
-  updates: Partial<{ email: string; passwordHash: string; fullName: string }>
+  updates: Partial<{
+    email: string;
+    passwordHash: string;
+    fullName: string;
+    firstName: string;
+    lastName: string;
+    emailAddress: string;
+    jobRole: string;
+    company: string;
+    country: string;
+    postalCode: string;
+  }>
 ) => {
   if (updates.email) {
     const taken = await findUserByEmail(updates.email);

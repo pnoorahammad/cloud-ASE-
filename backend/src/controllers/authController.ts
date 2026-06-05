@@ -111,6 +111,13 @@ export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) =
         userId: req.user.userId,
         email: dbUser?.email || req.user.email,
         fullName: dbUser?.fullName || req.user.fullName,
+        firstName: dbUser?.firstName || req.user.firstName,
+        lastName: dbUser?.lastName || req.user.lastName,
+        emailAddress: dbUser?.emailAddress || req.user.emailAddress,
+        jobRole: dbUser?.jobRole || req.user.jobRole,
+        company: dbUser?.company || req.user.company,
+        country: dbUser?.country || req.user.country,
+        postalCode: dbUser?.postalCode || req.user.postalCode,
         salesforceConnected: !!req.user.accessToken,
         username: req.user.username,
         hasLocalAccount: true
@@ -126,6 +133,13 @@ export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) =
       userId: req.user.userId,
       email: req.user.email,
       fullName: req.user.fullName,
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      emailAddress: req.user.emailAddress,
+      jobRole: req.user.jobRole,
+      company: req.user.company,
+      country: req.user.country,
+      postalCode: req.user.postalCode,
       salesforceConnected: false
     });
   }
