@@ -1,6 +1,21 @@
 import axios from 'axios'
 
-const API_BASE = (import.meta as any).env.VITE_API_BASE || 'http://localhost:5000'
+export const getApiBase = (): string => {
+  const envVal = (import.meta as any).env.VITE_API_BASE
+  if (envVal) return envVal
+  
+  if (typeof window !== 'undefined' && 
+      (window.location.hostname === 'localhost' || 
+       window.location.hostname === '127.0.0.1' || 
+       window.location.hostname.includes('192.168.') || 
+       window.location.hostname.includes('10.'))) {
+    return 'http://localhost:5000'
+  }
+  
+  return 'https://cloud-ase.onrender.com'
+}
+
+const API_BASE = getApiBase()
 
 const api = axios.create({ baseURL: API_BASE, headers: { 'Content-Type': 'application/json' }, withCredentials: true })
 

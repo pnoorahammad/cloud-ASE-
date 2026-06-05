@@ -9,6 +9,7 @@ import PersonIcon from '@mui/icons-material/Person'
 import CloudIcon from '@mui/icons-material/Cloud'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { getApiBase } from '../services/api'
 
 const WIDTH = 240
 
@@ -27,7 +28,7 @@ const navItems = [
 const Sidebar: React.FC<Props> = ({ user, onLogout }) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const base = (import.meta as any).env.VITE_API_BASE || 'http://localhost:5000'
+  const base = getApiBase()
 
   const connectSalesforce = () => {
     window.location.href = `${base}/auth/login?redirect=true`

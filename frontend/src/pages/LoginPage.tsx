@@ -7,6 +7,7 @@ import {
 import { Cloud, Security, History, Layers } from '@mui/icons-material'
 import { useAuth } from '../hooks/useAuth'
 import { signUp, signIn } from '../services/auth'
+import { getApiBase } from '../services/api'
 
 const LoginPage: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(true) // Default to SignUp to match Salesforce trial signup page!
@@ -121,12 +122,12 @@ const LoginPage: React.FC = () => {
   }
 
   const handleSalesforce = () => {
-    const base = (import.meta as any).env.VITE_API_BASE || 'http://localhost:5000'
+    const base = getApiBase()
     window.location.href = `${base}/auth/login?redirect=true`
   }
 
   const handleSimulate = () => {
-    const base = (import.meta as any).env.VITE_API_BASE || 'http://localhost:5000'
+    const base = getApiBase()
     window.location.href = `${base}/auth/login?redirect=true`
   }
 
