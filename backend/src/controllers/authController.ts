@@ -19,9 +19,23 @@ export const login = (req: Request, res: Response) => {
       }
     }
 
-    const state = req.query.state as string || 'default';
+    const rawState = req.query.state as string || 'default';
+    
+    // Determine the frontend origin requesting authentication
+    let origin = process.env.FRONTEND_URL || 'http://localhost:3000';
+    if (req.query.origin) {
+      origin = req.query.origin as string;
+    } else if (req.headers.referer) {
+      try {
+        const parsedReferer = new URL(req.headers.referer);
+        origin = parsedReferer.origin;
+      } catch { /* ignore */ }
+    }
+
+    // Encode origin and state in base64 to keep it clean and URL-safe
+    const state = Buffer.from(JSON.stringify({ s: rawState, o: origin })).toString('base64');
     const authUrl = getAuthUrl(state);
-    logger.info(`Generated Salesforce Auth URL redirecting with state: ${state}`);
+    logger.info(`Generated Salesforce Auth URL redirecting with state: ${state} (Origin: ${origin})`);
     
     // Support either direct redirect or returning JSON URL
     if (req.query.redirect === 'true') {
@@ -37,7 +51,20 @@ export const login = (req: Request, res: Response) => {
 const getFrontendUrl = () => process.env.FRONTEND_URL || 'http://localhost:3000';
 
 export const callback = async (req: Request, res: Response) => {
-  const frontendUrl = getFrontendUrl();
+  let frontendUrl = getFrontendUrl();
+
+  // Try to decode original requesting origin from state parameter
+  if (req.query.state) {
+    try {
+      const decodedStr = Buffer.from(req.query.state as string, 'base64').toString('utf8');
+      const parsedState = JSON.parse(decodedStr);
+      if (parsedState.o) {
+        frontendUrl = parsedState.o;
+      }
+    } catch {
+      // Fallback: If decoding fails, it might be a raw plain string state
+    }
+  }
 
   if (req.query.error) {
     const sfError = req.query.error_description || req.query.error;

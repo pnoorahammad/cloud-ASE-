@@ -31,7 +31,8 @@ const Sidebar: React.FC<Props> = ({ user, onLogout }) => {
   const base = getApiBase()
 
   const connectSalesforce = () => {
-    window.location.href = `${base}/auth/login?redirect=true`
+    const origin = window.location.origin
+    window.location.href = `${base}/auth/login?redirect=true&origin=${encodeURIComponent(origin)}`
   }
 
   return (

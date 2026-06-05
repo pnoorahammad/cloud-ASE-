@@ -123,12 +123,14 @@ const LoginPage: React.FC = () => {
 
   const handleSalesforce = () => {
     const base = getApiBase()
-    window.location.href = `${base}/auth/login?redirect=true`
+    const origin = window.location.origin
+    window.location.href = `${base}/auth/login?redirect=true&origin=${encodeURIComponent(origin)}`
   }
 
   const handleSimulate = () => {
     const base = getApiBase()
-    window.location.href = `${base}/auth/login?redirect=true`
+    const origin = window.location.origin
+    window.location.href = `${base}/auth/login?redirect=true&origin=${encodeURIComponent(origin)}`
   }
 
   return (
