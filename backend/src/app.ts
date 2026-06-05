@@ -60,7 +60,7 @@ const csrfProtection = csurf({
   }
 });
 app.use((req, res, next) => {
-  if (req.path.startsWith('/auth') || req.path === '/health') {
+  if (req.path.startsWith('/auth') || req.path === '/health' || req.path === '/') {
     return next();
   }
   return csrfProtection(req, res, next);
@@ -87,6 +87,15 @@ app.get('/org', authenticateToken as any, getCurrentOrg as any);
 app.get('/deployment-status', authenticateToken as any, requireSalesforce as any, getDeploymentStatus as any);
 
 // Root test endpoint
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Salesforce Validation Rule Manager API is running',
+    status: 'UP',
+    timestamp: new Date().toISOString(),
+    simulationMode: process.env.SF_SIMULATION_MODE === 'true'
+  });
+});
+
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'UP', 
